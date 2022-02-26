@@ -20,20 +20,21 @@ jobs:
         run: docker run -e CI=true nishanprime/client npm run test
 
       - name: Build docker prod images
-        run: docker build -t nishanprime/client ./client
-        run: docker build -t nishanprime/server ./server
-        run: docker build -t nishanprime/worker ./worker
-        run: docker build -t nishanprime/nginx ./nginx
-      
+        run: |
+          docker build -t nishanprime/client ./client
+          docker build -t nishanprime/server ./server
+          docker build -t nishanprime/worker ./worker
+          docker build -t nishanprime/nginx ./nginx
+
       - name: Docker Login
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
           DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-      
-      - name: Docker Push
-        run: docker push nishanprime/client
-        run: docker push nishanprime/server
-        run: docker push nishanprime/worker
-        run: docker push nishanprime/nginx
 
+      - name: Docker Push
+        run: |
+          docker push nishanprime/client
+          docker push nishanprime/server
+          docker push nishanprime/worker
+          docker push nishanprime/nginx
