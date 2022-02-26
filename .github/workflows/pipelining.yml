@@ -59,6 +59,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: multi-docker-practice
           environment_name: Multidockerpractice-env
-          version_label: 'SampleApplication'
+          # since i am deploying to already existing elastic beanstalk, i need to proved its version label
+          version_label: 'Sample Application'
           region: us-east-2
           existing_bucket_name: elasticbeanstalk-us-east-2-410333440162
