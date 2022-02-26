@@ -1,0 +1,39 @@
+name: Build Push and Deploy
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  build-and-push-to-dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Build docker image
+        # we are using dev docker file because we need to run test at first
+        # we just need to run test on client docker image so we only need to created that image as of now
+        run: docker build -t nishanprime/client -f ./client/Dockerfile.dev ./client
+
+      - name: Run test
+        run: docker run -e CI=true nishanprime/client npm run test
+
+      - name: Build docker prod images
+        run: docker build -t nishanprime/client ./client
+        run: docker build -t nishanprime/server ./server
+        run: docker build -t nishanprime/worker ./worker
+        run: docker build -t nishanprime/nginx ./nginx
+      
+      - name: Docker Login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      
+      - name: Docker Push
+        run: docker push nishanprime/client
+        run: docker push nishanprime/server
+        run: docker push nishanprime/worker
+        run: docker push nishanprime/nginx
+
